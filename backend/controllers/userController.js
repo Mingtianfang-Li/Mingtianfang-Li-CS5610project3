@@ -1,44 +1,80 @@
-const User = require('../models/user');
+const User = require('../models/User');
+const argon2 = require('argon2'); // Import Argon2 for password hashing
 
-// Create
+// Create a new user
 const createUser = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { username, email, password } = req.body;
 
-        const newUser = {
-            name,
+        const newUser = new User({
+            username,
             email,
             password,
-        }
+        });
 
         await newUser.save();
         res.status(201).json(newUser);
     } catch (error) {
-        res.status(400).json({message: error.message});
+        res.status(400).json({ message: error.message });
     }
-}
+};
 
-// Get
-
+// Get a user by ID
 const getUser = async (req, res) => {
     try {
-        const user = await (
-            User.findById(req.params.id)
-                .populate('userId', 'username'));
+        const user = await User.findById(req.params.id);
         if (!user) {
-            res.status(404).json({message: 'No user with this id'});
+            return res.status(404).json({ message: 'No user with this ID' });
         }
         res.status(200).json(user);
     } catch (error) {
-        res.status(500).json({message: error.message});
+        res.status(500).json({ message: error.message });
     }
-}
-// Update
+};
 
+// Update a user by ID
 const updateUser = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
-        const updatedUser 
+        const { username, email, password } = req.body;
+
+        const updates = { username, email };
+
+        if (password) {
+            updates.password = await argon2.hash(password);
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(
+            req.params.id,
+            updates,
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'No user with this ID' });
+        }
+
+        res.status(200).json(updatedUser);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
     }
-}
-// Delete
+};
+
+// Delete a user by ID
+const deleteUser = async (req, res) => {
+    try {
+        const deletedUser = await User.findByIdAndDelete(req.params.id);
+        if (!deletedUser) {
+            return res.status(404).json({ message: 'No user with this ID' });
+        }
+        res.status(200).json(deletedUser);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+module.exports = {
+    createUser,
+    getUser,
+    updateUser,
+    deleteUser,
+};
