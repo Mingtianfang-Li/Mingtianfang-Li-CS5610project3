@@ -10,8 +10,13 @@ dotenv.config();
 
 const app = express();
 
-// Midware
+// Middleware
 app.use(express.json());
+
+// Health Check Route (Test)
+app.get('/api/status', (req, res) => {
+    res.json({ message: 'Server is running!' });
+});
 
 // Routes
 app.use('/api/users', userRoutes);
@@ -19,7 +24,7 @@ app.use('/api/posts', postRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/auth', authRoutes);
 
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
     res.status(err.status || 500).json({
         message: err.message || 'Internal Server Error'
     });
