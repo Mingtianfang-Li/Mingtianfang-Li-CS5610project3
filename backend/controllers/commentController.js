@@ -69,6 +69,17 @@ const getCommentById = async (req, res) => {
 const updateComment = async (req, res) => {
     try {
         const { commentContent } = req.body;
+
+        const comment = await Comment.findById(req.params.id);
+
+        if (!comment) {
+            return res.status(404).json({ message: 'Comment not found' });
+        }
+
+        if (!comment.userId.equals(req.userId)) {
+            return res.status(403).json({ message: 'You are not authorized to delete this post' });
+        }
+
         const updatedComment = await Comment.findByIdAndUpdate(
             req.params.id,
             { commentContent },
@@ -96,8 +107,8 @@ const deleteComment = async (req, res) => {
             return res.status(404).json({ message: 'Comment not found' });
         }
 
-        if (comment.userId.toString() !== req.userId.toString()) {
-            return res.status(403).json({ message: 'You are not authorized to delete this Comment' });
+        if (!comment.userId.equals(req.userId)) {
+            return res.status(403).json({ message: 'You are not authorized to delete this post' });
         }
 
         await Comment.findByIdAndDelete(req.params.id);

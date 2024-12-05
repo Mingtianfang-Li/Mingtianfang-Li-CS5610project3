@@ -59,6 +59,22 @@ const updateUser = async (req, res) => {
     }
 };
 
+// Get me
+
+const getMe = async (req, res) => {
+    try {
+        const userId = req.userId;
+        // console.log("User ID from token:", userId);
+        const user = await User.findById(userId).select('username');
+        if (!user) {
+            return res.status(404).json({ message: 'No user with this ID' });
+        }
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // Delete a user by ID
 const deleteUser = async (req, res) => {
     try {
@@ -75,6 +91,7 @@ const deleteUser = async (req, res) => {
 module.exports = {
     createUser,
     getUser,
+    getMe,
     updateUser,
     deleteUser,
 };

@@ -2,14 +2,6 @@ const Post = require('../models/Post');
 
 // Create a new post
 const createPost = async (req, res) => {
-    // try {
-    //     const { userId, postContent } = req.body;
-    //     const newPost = new Post({ userId, postContent });
-    //     await newPost.save();
-    //     res.status(201).json(newPost);
-    // } catch (error) {
-    //     res.status(400).json({ message: error.message });
-    // }
     const { postContent } = req.body;
     const userId = req.userId;
 
@@ -70,15 +62,23 @@ const getPostById = async (req, res) => {
 // Update
 const updatePost = async (req, res) => {
     try {
-        const { postContent } = req.body;
-        const updatedPost = await Post.findByIdAndUpdate(
-            req.params.id,
-            { postContent },
-            { new: true }
-        );
-        if (!updatedPost) {
+
+        const post = await Post.findById(req.params.id);
+
+        if (!post) {
             return res.status(404).json({ message: 'Post not found' });
         }
+
+        if (!post.userId.equals(req.userId)) {
+            return res.status(403).json({ message: 'You are not authorized to edit this post' });
+        }
+
+        const updatedPost = await Post.findByIdAndUpdate(
+            req.params.id,
+            { postContent: req.body.postContent },
+            { new: true }
+        );
+
         res.status(200).json(updatedPost);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -93,7 +93,9 @@ const deletePost = async (req, res) => {
             return res.status(404).json({ message: 'Post not found' });
         }
 
-        if (post.userId.toString() !== req.userId.toString()) {
+        // console.log('This is UserID from Post: ', post.userId.toString());
+        // console.log('is equal ?', !post.userId.equals(req.userId));
+        if (!post.userId.equals(req.userId)) {
             return res.status(403).json({ message: 'You are not authorized to delete this post' });
         }
 
