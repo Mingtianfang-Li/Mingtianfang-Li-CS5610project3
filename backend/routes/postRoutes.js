@@ -6,6 +6,7 @@ const {
     getPostById,
     updatePost,
     deletePost,
+    getAllPost,
 } = require('../controllers/postController');
 
 const router = express.Router();
@@ -19,5 +20,7 @@ router.get('/:id', authenticate, getPostById);
 router.put('/:id', authenticate, updatePost);
 // Delete a post
 router.delete('/:id', authenticate, deletePost);
+// Get All Post
+router.get('', getAllPost);
 
 module.exports = router;

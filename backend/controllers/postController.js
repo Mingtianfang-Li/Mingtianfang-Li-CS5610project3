@@ -44,6 +44,16 @@ const getAllPostsByUserId = async (req, res) => {
     }
 };
 
+// Get all Post
+const getAllPost  = async (req, res) => {
+    try {
+        const posts = await Post.find();
+        res.status(200).json(posts);
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to fetch posts', error: error.message });
+    }
+}
+
 // Get a single post by postId
 const getPostById = async (req, res) => {
     try {
@@ -98,6 +108,7 @@ const deletePost = async (req, res) => {
 module.exports = {
     createPost,
     getAllPostsByUserId,
+    getAllPost,
     getPostById,
     updatePost,
     deletePost
