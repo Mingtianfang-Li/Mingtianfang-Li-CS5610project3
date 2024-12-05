@@ -12,13 +12,16 @@ const LoginPage = ({ onLogin }) => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const data = await apiClient.post('/api/auth/signin', { email, password });
+            const response = await apiClient.post('/api/auth/signin', { email, password });
 
-            // Save the token and trigger login callback
-            saveToken(data.token);
+            // console.log('Token need to save:', response.data.token);
+
+            saveToken(response.data.token);
+
+            // console.log('Token saved to localStorage:', getToken());
+
             onLogin();
 
-            // Navigate to the homepage
             navigate('/');
         } catch (error) {
             console.error('Error during login:', error);

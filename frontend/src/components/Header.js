@@ -16,11 +16,15 @@ const Header = ({ isLoggedIn, onLogout }) => {
                 const token = getToken();
                 if (token) {
                     try {
-                        const response = await apiClient.get('/api/auth/user', true);
+                        const response = await apiClient.get('/api/users/me', {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                            },
+                        });
                         setUsername(response.data.username);
                     } catch (error) {
                         console.error('Error fetching user info:', error.response?.data?.message || error.message);
-                        setUsername('Guest'); // Fallback
+                        setUsername('Guest');
                     }
                 }
             }
@@ -48,6 +52,24 @@ const Header = ({ isLoggedIn, onLogout }) => {
         setAnchorEl(null);
     };
 
+    const menuItems = isLoggedIn
+        ? [
+            <MenuItem key="profile" onClick={() => { handleMenuClose(); navigate('/user-profile'); }}>
+                {username || 'Loading...'}
+            </MenuItem>,
+            <MenuItem key="logout" onClick={() => { handleMenuClose(); handleLogout(); }}>
+                Logout
+            </MenuItem>,
+        ]
+        : [
+            <MenuItem key="login" onClick={() => { handleMenuClose(); navigate('/login'); }}>
+                Login
+            </MenuItem>,
+            <MenuItem key="signup" onClick={() => { handleMenuClose(); navigate('/signup'); }}>
+                Sign Up
+            </MenuItem>,
+        ];
+
     return (
         <AppBar position="static">
             <Toolbar>
@@ -72,19 +94,7 @@ const Header = ({ isLoggedIn, onLogout }) => {
                         onClose={handleMenuClose}
                     >
                         <MenuItem onClick={() => { handleMenuClose(); navigate('/'); }}>Home</MenuItem>
-                        {isLoggedIn ? (
-                            <>
-                                <MenuItem onClick={() => { handleMenuClose(); navigate('/user-profile'); }}>
-                                    {username || 'Loading...'}
-                                </MenuItem>
-                                <MenuItem onClick={() => { handleMenuClose(); handleLogout(); }}>Logout</MenuItem>
-                            </>
-                        ) : (
-                            <>
-                                <MenuItem onClick={() => { handleMenuClose(); navigate('/login'); }}>Login</MenuItem>
-                                <MenuItem onClick={() => { handleMenuClose(); navigate('/signup'); }}>Sign Up</MenuItem>
-                            </>
-                        )}
+                        {menuItems}
                     </Menu>
                 </Box>
             </Toolbar>
