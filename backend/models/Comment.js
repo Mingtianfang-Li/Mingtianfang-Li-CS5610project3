@@ -43,4 +43,14 @@ commentSchema.post('save', function(error, doc, next) {
     }
 });
 
+commentSchema.pre('find', function(next) {
+    this.populate('userId', 'username');
+    next();
+});
+
+commentSchema.pre('findOne', function(next) {
+    this.populate('userId', 'username');
+    next();
+});
+
 module.exports = mongoose.model('Comment', commentSchema);

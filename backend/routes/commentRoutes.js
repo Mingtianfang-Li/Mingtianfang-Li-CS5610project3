@@ -11,8 +11,8 @@ const router = express.Router();
 
 // Create a comment
 router.post('/', authenticate, createComment);
-// Get comments by user ID
-router.get('/:postId', authenticate, getCommentsByPostId);
+// Get all comments for a postId
+router.get('/:postId', getCommentsByPostId);
 // Delete a comment by ID
 router.delete('/:id', authenticate, deleteComment);
 

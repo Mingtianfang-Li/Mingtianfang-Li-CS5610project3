@@ -7,11 +7,14 @@ const commentRoutes = require('./routes/commentRoutes');
 const authRoutes = require('./routes/authRoutes');
 
 dotenv.config();
+const cors = require('cors');
 
 const app = express();
 
 // Middleware
 app.use(express.json());
+
+app.use(cors());
 
 // Health Check Route (Test)
 app.get('/api/status', (req, res) => {

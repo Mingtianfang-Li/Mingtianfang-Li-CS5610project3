@@ -29,4 +29,14 @@ postSchema.post('save', function(error, doc, next) {
     }
 });
 
+postSchema.pre('find', function(next) {
+    this.populate('userId', 'username');
+    next();
+});
+
+postSchema.pre('findOne', function(next) {
+    this.populate('userId', 'username');
+    next();
+});
+
 module.exports = mongoose.model('Post', postSchema);
