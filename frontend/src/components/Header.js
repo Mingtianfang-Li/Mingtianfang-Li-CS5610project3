@@ -1,16 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppBar, Toolbar, Typography, Box, Menu, MenuItem, IconButton } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import apiClient from '../utils/apiClient';
+import { removeToken, getToken } from '../utils/authUtils';
 
-const Header = ({ isLoggedIn, username, onLogout }) => {
+const Header = ({ isLoggedIn, onLogout }) => {
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState(null);
+    const [username, setUsername] = useState(null);
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            if (isLoggedIn) {
+                const token = getToken();
+                if (token) {
+                    try {
+                        const response = await apiClient.get('/api/auth/user', true);
+                        setUsername(response.data.username);
+                    } catch (error) {
+                        console.error('Error fetching user info:', error.response?.data?.message || error.message);
+                        setUsername('Guest'); // Fallback
+                    }
+                }
+            }
+        };
+
+        fetchUserData();
+    }, [isLoggedIn]);
 
     const handleLogout = async () => {
         try {
-            await axios.post('/api/auth/signout', null, { withCredentials: true });
+            await apiClient.post('/api/auth/signout');
+            removeToken();
             onLogout();
             navigate('/login');
         } catch (error) {
@@ -53,7 +75,7 @@ const Header = ({ isLoggedIn, username, onLogout }) => {
                         {isLoggedIn ? (
                             <>
                                 <MenuItem onClick={() => { handleMenuClose(); navigate('/user-profile'); }}>
-                                    {username}
+                                    {username || 'Loading...'}
                                 </MenuItem>
                                 <MenuItem onClick={() => { handleMenuClose(); handleLogout(); }}>Logout</MenuItem>
                             </>

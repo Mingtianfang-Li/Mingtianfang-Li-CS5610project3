@@ -13,7 +13,7 @@ const HomePage = () => {
             try {
                 // Fetch posts with populated user data
                 const response = await apiClient.get('/api/posts');
-                const sortedPosts = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Sort by createdAt (newest first)
+                const sortedPosts = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
                 setPosts(sortedPosts);
 
                 // Fetch comments with populated user data

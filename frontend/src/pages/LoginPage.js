@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Container, TextField, Button, Typography, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-// import Header from '../components/Header';
+import { saveToken } from '../utils/authUtils';
+import apiClient from '../utils/apiClient';
 
 const LoginPage = ({ onLogin }) => {
     const [email, setEmail] = useState('');
@@ -10,28 +11,23 @@ const LoginPage = ({ onLogin }) => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        // Make your login request here
-        // Example:
-        const response = await fetch('/api/auth/login', {
-            method: 'POST',
-            body: JSON.stringify({ email, password }),
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
+        try {
+            const data = await apiClient.post('/api/auth/signin', { email, password });
 
-        const data = await response.json();
-        if (data.success) {
+            // Save the token and trigger login callback
+            saveToken(data.token);
             onLogin();
+
+            // Navigate to the homepage
             navigate('/');
-        } else {
-            alert('Login failed');
+        } catch (error) {
+            console.error('Error during login:', error);
+            alert(`Login failed: ${error.message}`);
         }
     };
 
     return (
         <div>
-            {/*<Header isLoggedIn={false} username="" onLogout={() => {}} />*/}
             <Container>
                 <Box mt={5}>
                     <Typography variant="h4" gutterBottom>
