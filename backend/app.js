@@ -13,9 +13,9 @@ const app = express();
 
 app.use(express.json());
 
-const allowedOrigins = ['https://mingtianfang-li-cs-5610project3-w2ad.vercel.app'];
-app.use(cors({ origin: allowedOrigins }));
-// app.use(cors());
+// const allowedOrigins = ['https://mingtianfang-li-cs-5610project3-w2ad.vercel.app'];
+// app.use(cors({ origin: allowedOrigins }));
+app.use(cors());
 
 // Health Check Route (Test)
 app.get('/api/status', (req, res) => {
