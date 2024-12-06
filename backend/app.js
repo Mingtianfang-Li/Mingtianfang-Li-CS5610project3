@@ -11,10 +11,11 @@ const cors = require('cors');
 
 const app = express();
 
-// Middleware
 app.use(express.json());
 
-app.use(cors());
+const allowedOrigins = ['https://mingtianfang-li-cs-5610project3-w2ad.vercel.app'];
+app.use(cors({ origin: allowedOrigins }));
+// app.use(cors());
 
 // Health Check Route (Test)
 app.get('/api/status', (req, res) => {
