@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getToken } from './authUtils';
 
-const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+const BASE_URL = 'https://mingtianfang-li-cs5610project3.onrender.com';
 
 const apiClient = axios.create({
     baseURL: BASE_URL,
